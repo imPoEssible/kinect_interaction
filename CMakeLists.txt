@@ -49,7 +49,7 @@ include_directories(${catkin_INCLUDEDIR}
 
 include_directories("nite/Include")
 include_directories("nite/Source/XnCommon")
-include_directories("${PROJECT_SOURCE_DIR}/include/walle")
+include_directories("${PROJECT_SOURCE_DIR}/include/poe_kinect")
 
 link_directories(${catkin_LIBRARY_DIRS})
 link_directories(${orocos_kdl_LIBRARY_DIRS}
@@ -94,5 +94,5 @@ install(DIRECTORY launch/
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 	PATTERN ".svn" EXCLUDE)
 
-install(FILES walle.xml 
+install(FILES package.xml 
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

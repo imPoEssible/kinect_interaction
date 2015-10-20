@@ -1,0 +1,23 @@
+<package>
+  <description brief="poe_kinect">
+
+     poe_kinect
+
+  </description>
+  <author>sli</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/poe_kinect</url>
+  
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="sensor_msgs"/>
+  <depend package="cv_bridge"/>
+  <depend package="image_transport"/>
+
+  <export><cpp lflags="-lGL -lglut -lGLU"/></export>
+
+</package>
+
+
