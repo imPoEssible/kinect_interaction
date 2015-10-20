@@ -53,7 +53,10 @@ def publisher():
 		if message != 0:
 			print "sending message: ", message
 			ser.port.write("1")
+			time.sleep(5)
+			ser.port.write("0")
 			time.sleep(2)
+			message = 0
 	r.sleep()
 
 if __name__ == "__main__":
