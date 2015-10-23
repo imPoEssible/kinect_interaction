@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
-#include <walle/pointerpos.h>
-#include <walle/gestures.h>
+#include <poe_kinect/pointerpos.h>
+#include <poe_kinect/gestures.h>
 
 #include <sstream>
 
@@ -107,7 +107,7 @@ XnBool fileExists(const char *fn)
 
 // this sample can run either as a regular sample, or as a client for multi-process (remote mode)
 int main(int argc, char** argv)
-{  	
+{
 	xn::Context context;
 	xn::ScriptNode scriptNode;
 	XnVSessionGenerator* pSessionGenerator;
@@ -180,11 +180,11 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "pointcontrol", ros::init_options::NoSigintHandler);
   	ros::NodeHandle rosnode = ros::NodeHandle();
 
-  	ros::Publisher pub = rosnode.advertise<walle::pointerpos>("point_location", 10); //publisher for hand XYZ positions
-  	walle::pointerpos msg;
+  	ros::Publisher pub = rosnode.advertise<poe_kinect::pointerpos>("point_location", 10); //publisher for hand XYZ positions
+  	poe_kinect::pointerpos msg;
 
-  	ros::Publisher pub_gestures = rosnode.advertise<walle::gestures>("detected_gestures", 10); //publisher for gesture booleans
-  	walle::gestures msg_gestures;
+  	ros::Publisher pub_gestures = rosnode.advertise<poe_kinect::gestures>("detected_gestures", 10); //publisher for gesture booleans
+  	poe_kinect::gestures msg_gestures;
 
 
 	// Main loop
@@ -204,12 +204,12 @@ int main(int argc, char** argv)
 			msg.positiony = ypos;
 			msg.positionz = zpos;
 			pub.publish(msg);
-			
+
 			msg_gestures.wave = wave;
 			msg_gestures.hello = sess_start;
 			msg_gestures.goodbye = sess_end;
 			pub_gestures.publish(msg_gestures);
-			
+
 			//set gesture booleans back to false for re-initialization again
 			wave = false;
 			sess_start = false;

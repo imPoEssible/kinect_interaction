@@ -1,12 +1,11 @@
-#include <walle/HRI.h>
 #include <sensor_msgs/Image.h>
 #include <ros/ros.h>
 #include <iostream>
 #include <stdlib.h>
 
 /*#include "opencv2\opencv.hpp"
-#include "opencv2\highgui\highgui.hpp" 
-#include "opencv2\imgproc\imgproc.hpp" 
+#include "opencv2\highgui\highgui.hpp"
+#include "opencv2\imgproc\imgproc.hpp"
 */
 static int highestnum = 0;
 
@@ -49,7 +48,7 @@ int main(int argc, char **argv)
 
   ros::Subscriber subcommand = rosnode.subscribe("/camera/depth_registered/image_raw", 10, cameracallback);
   printf("subscribe get\n");
-  
+
   if      (fileExists(SAMPLE_XML_FILE)) printf("SAMPLE_XML_FILE");
     else if (fileExists(SAMPLE_XML_FILE_LOCAL)) printf("SAMPLE_XML_FILE_LOCAL");
     else {
@@ -66,9 +65,9 @@ int main(int argc, char **argv)
     }
   }
 */
-  //ros::Publisher pub = rosnode.advertise<walle::HRI>("walle_say_hi", 10);
-  //walle:HRI interaction;
-  
+  //ros::Publisher pub = rosnode.advertise<poe_kinect::HRI>("poe_kinect_say_hi", 10);
+  //poe_kinect:HRI interaction;
+
   if (highestnum > 1){
   	printf("Hello!\n");
   }
@@ -76,7 +75,7 @@ int main(int argc, char **argv)
   //printf("Press enter to send message\n");
   //getchar();
 
-  
+
   for (;;)
     ros::spinOnce();
 
