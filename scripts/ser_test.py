@@ -1,9 +1,9 @@
 #!/usr/bin/python
-import roslib; roslib.load_manifest('walle')
+import roslib; roslib.load_manifest('poe_kinect')
 import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Char
-from walle.msg import *
+from poe_kinect.msg import *
 import random
 import serial
 import time
@@ -53,6 +53,9 @@ def publisher():
 		if message != 0:
 			print "sending message: ", message
 			ser.port.write("1")
+			time.sleep(5)
+			# print "sending message: 2"
+			ser.port.write("2")
 			time.sleep(5)
 			ser.port.write("0")
 			time.sleep(2)
