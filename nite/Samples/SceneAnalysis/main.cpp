@@ -164,7 +164,7 @@ void glutDisplay (void)
 		g_bStep = false;
 		g_bPause = true;
 	}
-	
+
 	// Process the data
 	//DRAW
 	g_DepthGenerator.GetMetaData(depthMD);
@@ -291,8 +291,7 @@ int main(int argc, char **argv)
 	while ((!_kbhit()) && (!g_bQuit))
 	{
 		glutDisplay();
-		eglSwapBuffers(display, surface);
-	}
+		eglSwapBuffers(display, surface);	}
 
 	opengles_shutdown(display, surface, context);
 

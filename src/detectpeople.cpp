@@ -1,83 +1,142 @@
-#include <sensor_msgs/Image.h>
-#include <ros/ros.h>
-#include <iostream>
-#include <stdlib.h>
+/*******************************************************************************
+*                                                                              *
+*   PrimeSense NITE 1.3 - Single Control Sample                                *
+*   Copyright (C) 2010 PrimeSense Ltd.                                         *
+*                                                                              *
+*******************************************************************************/
 
-/*#include "opencv2\opencv.hpp"
-#include "opencv2\highgui\highgui.hpp"
-#include "opencv2\imgproc\imgproc.hpp"
-*/
-static int highestnum = 0;
+//-----------------------------------------------------------------------------
+// Headers
+//-----------------------------------------------------------------------------
+// General headers
+#include <stdio.h>
+// OpenNI headers
+#include <XnOpenNI.h>
+// NITE headers
+#include <XnVSessionManager.h>
+#include "XnVMultiProcessFlowClient.h"
+#include <XnVWaveDetector.h>
+
+//ROS headers
+#include <ros/ros.h>
+#include <ros/package.h> //we use this to get file paths
+
+#include <stdlib.h>
+#include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
+#include <poe_kinect/pointerpos.h>
+#include <poe_kinect/gestures.h>
+
+#include <sstream>
+
+#include <XnOpenNI.h>
+#include <XnCodecIDs.h>
+#include <XnCppWrapper.h>
+
+
+// xml to initialize OpenNI
+
+//TODO: Figure out relative path references
+//const char* pack_path = (ros::package::getPath("poe_kinect") + "/src/Data/Sample-Tracking.xml").c_str();
+//#define SAMPLE_XML_FILE pack_path
 
 #define SAMPLE_XML_FILE "Data/Sample-Tracking.xml"
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
-void cameracallback(const sensor_msgs::Image &msg){
-	printf("hello\n");
-  //std::cout << msg.height << std::endl;
-/*  int current_highest = 0;
-	for(int i = 0; i < msg.height; i++){
-    for(int j = 0; j < msg.width; j++){
-		  if (msg.data(j, i) > current_highest){
-			 current_highest = msg.data(j, i);
-      }
-    }
-	}
+using std::string;
 
-  highestnum = current_highest;*/
 
+xn::Context g_Context;
+xn::ScriptNode g_ScripeNode;
+xn::DepthGenerator g_DepthGenerator;
+xn::SceneAnalyzer g_SceneAnalyzer;
+xn::Recorder* g_pRecorder;
+
+
+//Below we declare the variables we're going to use to store our outbount ROS messages
+int xpos;
+int ypos;
+int zpos;
+bool wave;
+bool sess_start;
+bool sess_end;
+
+//-----------------------------------------------------------------------------
+// Callbacks
+//-----------------------------------------------------------------------------
+
+// Callback for when the focus is in progress
+void XN_CALLBACK_TYPE SessionProgress(const XnChar* strFocus, const XnPoint3D& ptFocusPoint, XnFloat fProgress, void* UserCxt)
+{
+  printf("Session progress (%6.2f,%6.2f,%6.2f) - %6.2f [%s]\n", ptFocusPoint.X, ptFocusPoint.Y, ptFocusPoint.Z, fProgress,  strFocus);
+}
+// callback for session start
+void XN_CALLBACK_TYPE SessionStart(const XnPoint3D& ptFocusPoint, void* UserCxt)
+{
+  printf("Session started. Please wave (%6.2f,%6.2f,%6.2f)...\n", ptFocusPoint.X, ptFocusPoint.Y, ptFocusPoint.Z);
+  sess_start = true; //we set session start TRUE, allows us to generate a "hello" response
+}
+// Callback for session end
+void XN_CALLBACK_TYPE SessionEnd(void* UserCxt)
+{
+  printf("Session ended. Please perform focus gesture to start session\n");
+  sess_end = true; //we set session end TRUE, allows us to generate a "goodbye" response
+}
+// Callback for wave detection
+void XN_CALLBACK_TYPE OnWaveCB(void* cxt)
+{
+  printf("Wave!\n");
+  wave = true; //we set a wave flag, allows us to generate a generic interaction response
+}
+// callback for a new position of any hand
+void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext* pContext, void* cxt)
+{ printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X, pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);
+  //We pull data from the NiTE API, and pipe these to our outbound message holders
+  xpos = pContext->ptPosition.X;
+  ypos = pContext->ptPosition.Y;
+  zpos = pContext->ptPosition.Z;
 }
 
-bool fileExists(const char *fn)
+
+//-----------------------------------------------------------------------------
+// Main
+//-----------------------------------------------------------------------------
+
+XnBool fileExists(const char *fn)
 {
-  bool exists;
+  XnBool exists;
   xnOSDoesFileExist(fn, &exists);
   return exists;
 }
 
 
-int main(int argc, char **argv)
+// this sample can run either as a regular sample, or as a client for multi-process (remote mode)
+int main(int argc, char** argv)
 {
-    ////////////////////////////////////////////////////
-  // ros stuff
-  ros::init(argc, argv, "detect_people", ros::init_options::NoSigintHandler);
-  ros::NodeHandle rosnode = ros::NodeHandle();
-  //ros::Subscriber subcommand = rosnode.subscribe("/camera/rgb/image_color", 10, cameracallback);
+  xn::Context context;
+  xn::ScriptNode scriptNode;
+  XnVSessionGenerator* pSessionGenerator;
+  XnBool bRemoting = FALSE;
 
+  XnStatus rc = XN_STATUS_OK;
+  xn::EnumerationErrors errors;
 
+  rc = g_Context.InitFromXmlFile(SAMPLE_XML_FILE, g_ScripeNode, &errors);
+  //CHECK_ERRORS(rc, errors, "InitFromXmlFile");
+  //CHECK_RC(rc, "InitFromXml");
 
-  ros::Subscriber subcommand = rosnode.subscribe("/camera/depth_registered/image_raw", 10, cameracallback);
-  printf("subscribe get\n");
+  rc = g_Context.FindExistingNode(XN_NODE_TYPE_DEPTH, g_DepthGenerator);
+  //CHECK_RC(rc, "Find depth generator");
+  rc = g_Context.FindExistingNode(XN_NODE_TYPE_SCENE, g_SceneAnalyzer);
+  //CHECK_RC(rc, "Find scene analyzer");
 
-  if      (fileExists(SAMPLE_XML_FILE)) printf("SAMPLE_XML_FILE");
-    else if (fileExists(SAMPLE_XML_FILE_LOCAL)) printf("SAMPLE_XML_FILE_LOCAL");
-    else {
-      printf("Could not find '%s' nor '%s'. Aborting.\n" , SAMPLE_XML_FILE, SAMPLE_XML_FILE_LOCAL);
-    }
+  rc = g_Context.StartGeneratingAll();
+  //CHECK_RC(rc, "StartGenerating");
 
-  /*ros::Time last_ros_time_;
-  bool wait = true;
-  while (wait) {
-    printf("waiting!\n");
-    last_ros_time_ = ros::Time::now();
-    if (last_ros_time_.toSec() > 0) {
-      wait = false;
-    }
+  // Main loop
+  while (!xnOSWasKeyboardHit())
+  {
   }
-*/
-  //ros::Publisher pub = rosnode.advertise<poe_kinect::HRI>("poe_kinect_say_hi", 10);
-  //poe_kinect:HRI interaction;
-
-  if (highestnum > 1){
-  	printf("Hello!\n");
-  }
-
-  //printf("Press enter to send message\n");
-  //getchar();
-
-
-  for (;;)
-    ros::spinOnce();
 
   return 0;
 }

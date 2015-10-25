@@ -33,7 +33,7 @@ GLuint initTexture(void** buf, int& width, int& height)
 	glGenTextures(1,&texID);
 
 	width = getClosestPowerOfTwo(width);
-	height = getClosestPowerOfTwo(height); 
+	height = getClosestPowerOfTwo(height);
 	*buf = new unsigned char[width*height*4];
 	glBindTexture(GL_TEXTURE_2D,texID);
 
@@ -104,7 +104,7 @@ void DrawFrameID(XnUInt32 nFrameID)
 #endif
 void DrawDepthMap(const xn::DepthMetaData& dmd, const xn::SceneMetaData& smd)
 {
-	static bool bInitialized = false;	
+	static bool bInitialized = false;
 	static GLuint depthTexID;
 	static unsigned char* pDepthTexBuf;
 	static int texWidth, texHeight;
@@ -210,7 +210,7 @@ void DrawDepthMap(const xn::DepthMetaData& dmd, const xn::SceneMetaData& smd)
 				{
 					nHistValue = g_pDepthHist[nValue];
 
-					pDestImage[0] = nHistValue * Colors[nColorID][0]; 
+					pDestImage[0] = nHistValue * Colors[nColorID][0];
 					pDestImage[1] = nHistValue * Colors[nColorID][1];
 					pDestImage[2] = nHistValue * Colors[nColorID][2];
 
@@ -245,7 +245,7 @@ void DrawDepthMap(const xn::DepthMetaData& dmd, const xn::SceneMetaData& smd)
 	glColor4f(0.75,0.75,0.75,1);
 
 	glEnable(GL_TEXTURE_2D);
-	DrawTexture(dmd.XRes(),dmd.YRes(),0,0);	
+	DrawTexture(dmd.XRes(),dmd.YRes(),0,0);
 	glDisable(GL_TEXTURE_2D);
 #ifdef USE_GLUT
 	char strLabel[3] = "";

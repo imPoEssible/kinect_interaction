@@ -29,14 +29,17 @@
 
 #include <sstream>
 
-
 #include <XnOpenNI.h>
 #include <XnCodecIDs.h>
 #include <XnCppWrapper.h>
 
 
-
 // xml to initialize OpenNI
+
+//TODO: Figure out relative path references
+//const char* pack_path = (ros::package::getPath("poe_kinect") + "/src/Data/Sample-Tracking.xml").c_str();
+//#define SAMPLE_XML_FILE pack_path
+
 #define SAMPLE_XML_FILE "Data/Sample-Tracking.xml"
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
@@ -92,7 +95,6 @@ void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext* pContext, void* c
 }
 
 
-
 //-----------------------------------------------------------------------------
 // Main
 //-----------------------------------------------------------------------------
@@ -112,7 +114,6 @@ int main(int argc, char** argv)
 	xn::ScriptNode scriptNode;
 	XnVSessionGenerator* pSessionGenerator;
 	XnBool bRemoting = FALSE;
-
 
 
 	if (argc > 1)

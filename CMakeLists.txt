@@ -64,6 +64,14 @@ target_link_libraries(detectfinger ${catkin_LIBRARIES}
 				   ${orocos_kdl_LIBRARIES}
 				   ${OpenGL_INCLUDE_DIRS} -lXnVNite_1_5_2)
 
+
+add_executable(detectpeople src/detectpeople.cpp)
+add_dependencies(detectpeople geometry_msgs_gencpp ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(detectpeople ${catkin_LIBRARIES}
+				   ${OpenNI_LIBRARIES}
+				   ${orocos_kdl_LIBRARIES}
+				   ${OpenGL_INCLUDE_DIRS} -lXnVNite_1_5_2)
+
 #add_executable(skeleton src/Skeleton/openni_tracker.cpp)
 #add_dependencies(skeleton geometry_msgs_gencpp)
 #target_link_libraries(skeleton ${catkin_LIBRARIES}
@@ -71,7 +79,7 @@ target_link_libraries(detectfinger ${catkin_LIBRARIES}
 #			       ${orocos_kdl_LIBRARIES})
 
 
-#add_executable(viewer src/PointViewer/main.cpp 
+#add_executable(viewer src/PointViewer/main.cpp
 #			src/PointViewer/kbhit.cpp
 #			src/PointViewer/opengles.cpp
 #			src/PointViewer/signal_catch.cpp)
@@ -80,11 +88,11 @@ target_link_libraries(detectfinger ${catkin_LIBRARIES}
 #target_link_libraries(viewer ${catkin_LIBRARIES}
 #				   ${OpenNI_LIBRARIES}
 #				   ${orocos_kdl_LIBRARIES}
-#				   ${OpenGL_INCLUDE_DIRS} 
+#				   ${OpenGL_INCLUDE_DIRS}
 #				   ${GLUT_LIBRARIES}
 #				   -lXnVNite_1_5_2)
 
-install(TARGETS detectfinger
+install(TARGETS detectfinger detectpeople
 	RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY include/${PROJECT_NAME}/
@@ -94,5 +102,5 @@ install(DIRECTORY launch/
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 	PATTERN ".svn" EXCLUDE)
 
-install(FILES package.xml 
+install(FILES package.xml
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
