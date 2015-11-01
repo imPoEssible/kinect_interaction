@@ -1,8 +1,15 @@
+"""
+* Using OpenCV, this script detects a face and a 
+* smile within the face. It also draws rectangles
+* around the face. It uses two haarcascade for each 
+* feature detected
+"""
+
 import cv2
 import numpy as np
 
-face_cascade = cv2.CascadeClassifier('/home/shruti/POE/face_detection/haarcascade_frontalface_alt.xml')
-mouth_cascade = cv2.CascadeClassifier('/home/shruti/POE/face_detection/haarcascade_smile.xml')
+face_cascade = cv2.CascadeClassifier('/home/shruti/POE/face_detection/haarcascade_frontalface_alt.xml') #face xml
+mouth_cascade = cv2.CascadeClassifier('/home/shruti/POE/face_detection/haarcascade_smile.xml') #smile xml
 
 cap = cv2.VideoCapture(0)
 
